@@ -350,9 +350,7 @@ This project is licensed under the MIT License - see LICENSE file for details.
 ## 📧 Contact
 
 For questions or collaboration:
-- Lab Website: [MCCL Website]
-- Email: [Your Email]
-- GitHub Issues: [Open an issue]
+- Email: arishasz@umich.edu
 
 ---
 
