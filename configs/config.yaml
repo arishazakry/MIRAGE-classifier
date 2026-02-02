@@ -1,0 +1,134 @@
+# Configuration file for Music Geographic Classification
+
+# Data paths
+data:
+  mirage_corpus: "data/mirage_corpus.csv"
+  features_dir: "data/features/"
+  splits_dir: "data/splits/"
+  output_dir: "data/outputs/"
+  
+# Feature extraction
+features:
+  source: "spotify"  # Options: "spotify", "librosa", "both"
+  spotify:
+    use_api: true
+    features: ["danceability", "energy", "key", "loudness", "mode", 
+               "speechiness", "acousticness", "instrumentalness", 
+               "liveness", "valence", "tempo", "duration_ms", "time_signature"]
+  librosa:
+    sr: 22050
+    n_mfcc: 13
+    n_mels: 128
+    hop_length: 512
+    duration: 30  # seconds
+  
+# Dataset splits
+dataset:
+  train_split: 0.7
+  val_split: 0.1
+  test_split: 0.2
+  random_seed: 42
+  stratify: true
+  remove_duplicates: true
+  
+# Model architecture
+model:
+  type: "fcnn"  # Options: "fcnn", "cnn", "rnn", "attention"
+  
+  # FCNN (Fully Connected Neural Network)
+  fcnn:
+    input_dim: 13
+    hidden_dims: [256, 128, 64]
+    dropout: 0.3
+    use_batch_norm: true
+    activation: "relu"
+    
+  # CNN (Convolutional Neural Network)
+  cnn:
+    input_channels: 1
+    conv_channels: [32, 64, 128, 256]
+    kernel_size: 3
+    pool_size: 2
+    fc_hidden_dim: 128
+    dropout: 0.5
+    
+  # RNN (Recurrent Neural Network with LSTM)
+  rnn:
+    input_dim: 13
+    hidden_dim: 128
+    num_layers: 2
+    dropout: 0.3
+    bidirectional: true
+    
+  # Attention-based RNN
+  attention:
+    input_dim: 13
+    hidden_dim: 128
+    num_layers: 2
+    dropout: 0.3
+    bidirectional: true
+    attention_type: "self"  # Options: "self", "additive", "dot"
+
+# Training
+training:
+  num_classes: 57  # Number of countries
+  batch_size: 32
+  num_epochs: 50
+  learning_rate: 0.001
+  weight_decay: 0.00001  # L2 regularization
+  
+  # Optimizer
+  optimizer: "adam"  # Options: "adam", "adamw", "sgd"
+  adam_betas: [0.9, 0.999]
+  sgd_momentum: 0.9
+  
+  # Loss function
+  loss: "cross_entropy"
+  use_class_weights: true  # To handle imbalanced data
+  label_smoothing: 0.1  # Optional: helps with overconfidence
+  
+  # Learning rate scheduler
+  scheduler:
+    type: "reduce_on_plateau"  # Options: "reduce_on_plateau", "step", "cosine"
+    patience: 5
+    factor: 0.5
+    min_lr: 0.00001
+    
+  # Early stopping
+  early_stopping:
+    enabled: true
+    patience: 10
+    min_delta: 0.001
+    
+  # Mixed precision training (faster on modern GPUs)
+  mixed_precision: true
+  
+  # Gradient clipping (prevents exploding gradients)
+  gradient_clip: 1.0
+  
+# Evaluation
+evaluation:
+  metrics: ["accuracy", "top3_accuracy", "top5_accuracy", "f1_macro", "f1_micro"]
+  save_confusion_matrix: true
+  save_per_class_metrics: true
+  
+# Experiment tracking
+experiment:
+  use_wandb: false  # Set to true if you want to use Weights & Biases
+  wandb_project: "music-geography-classification"
+  wandb_entity: null  # Your W&B username
+  save_checkpoints: true
+  checkpoint_dir: "checkpoints/"
+  save_best_only: true
+  
+# Hardware
+hardware:
+  device: "cuda"  # Options: "cuda", "cpu", "mps" (for Mac M1/M2)
+  num_workers: 4  # For data loading
+  pin_memory: true
+  
+# Reproducibility
+reproducibility:
+  seed: 42
+  deterministic: true
+  benchmark: false
